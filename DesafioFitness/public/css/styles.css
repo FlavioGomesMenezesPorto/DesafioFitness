@@ -1,0 +1,39 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+main {
+    width: 80%;
+    margin: 2rem auto;
+}
+
+h2 {
+    color: #333;
+}
+
+#desafios-lista ul {
+    list-style: none;
+    padding: 0;
+}
+
+#desafios-lista li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}
+
+#desafios-lista h3 {
+    margin-top: 0;
+}
