@@ -8,11 +8,13 @@ class DesafioDao {
 
     public function __construct() {
         try {
-            $this->db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS);
+           
+            $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+            $this->db = new PDO($dsn, DB_USER, DB_PASS);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            // Em uma aplicação real, logar o erro em vez de exibi-lo
-            die("Erro de conexão com o banco de dados: " . $e->getMessage());
+          
+            throw new PDOException("Não foi possível conectar ao banco de dados: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
     }
 
@@ -27,14 +29,57 @@ class DesafioDao {
             $desafio->setId($row['id']);
             $desafio->setNome($row['nome']);
             $desafio->setDescricao($row['descricao']);
-            $desafio->setDataInicio($row['data_inicio']);
-            $desafio->setDataFim($row['data_fim']);
-            $desafio->setStatus($row['status']);
             $desafios[] = $desafio;
         }
 
         return $desafios;
     }
 
-    // Outros métodos de CRUD (create, update, delete) podem ser adicionados aqui
+    public function getById($id) {
+        $sql = "SELECT * FROM desafios WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $desafio = new Desafio();
+            $desafio->setId($row['id']);
+            $desafio->setNome($row['nome']);
+            $desafio->setDescricao($row['descricao']);
+            return $desafio;
+        }
+
+        return null;
+    }
+
+    public function create(Desafio $desafio) {
+        $sql = "INSERT INTO desafios (nome, descricao) VALUES (:nome, :descricao)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':nome', $desafio->getNome());
+        $stmt->bindValue(':descricao', $desafio->getDescricao());
+
+        return $stmt->execute();
+    }
+
+    public function update(Desafio $desafio) {
+        $sql = "UPDATE desafios SET nome = :nome, descricao = :descricao WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $desafio->getId());
+        $stmt->bindValue(':nome', $desafio->getNome());
+        $stmt->bindValue(':descricao', $desafio->getDescricao());
+
+        return $stmt->execute();
+    }
+
+    public function delete($id) {
+        $sql = "DELETE FROM desafios WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id);
+
+        return $stmt->execute();
+    }
+
+    
 }
